@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phone Master</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+ background:#080d18;
+ color:white;
+ font-family:Arial,sans-serif;
+ padding:20px;
+}
+header{text-align:center;padding:25px 0}
+header h1{color:#39a9ff;font-size:30px}
+header p{color:#9ba9bd;margin-top:8px}
+.container{max-width:850px;margin:auto}
+.status{
+ background:#111d30;
+ padding:20px;border-radius:15px;
+ margin:15px 0;
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:14px;
+}
+.card{
+ background:#111d30;
+ padding:20px;
+ border:1px solid #233653;
+ border-radius:15px;
+ min-height:120px;
+}
+.card h3{color:#43b4ff;margin-bottom:12px}
+.card p{color:#c5d4e8;font-size:14px}
+button{
+ background:#1689e8;color:white;
+ border:0;padding:12px 18px;
+ border-radius:9px;margin-top:15px;
+ cursor:pointer;
+}
+#result{margin-top:15px;color:#b8d7f8}
+footer{text-align:center;color:#77869a;margin-top:30px}
+@media(max-width:450px){
+ body{padding:12px}
+ .grid{grid-template-columns:1fr 1fr}
+ .card{padding:14px}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<header>
+<h1>📱 PHONE MASTER</h1>
+<p>Your Smart Device Dashboard</p>
+</header>
+
+<div class="status">
+<h2>Welcome to Phone Master</h2>
+<p id="device">Detecting your device...</p>
+<button onclick="getInfo()">Check My Phone</button>
+<div id="result"></div>
+</div>
+
+<div class="grid">
+<div class="card">
+<h3>🔋 Battery</h3>
+<p id="battery">Checking...</p>
+</div>
+<div class="card">
+<h3>💾 Storage</h3>
+<p id="storage">Checking...</p>
+</div>
+<div class="card">
+<h3>🧠 RAM</h3>
+<p id="ram">Checking...</p>
+</div>
+<div class="card">
+<h3>⚙️ Processor</h3>
+<p id="cpu">Checking...</p>
+</div>
+<div class="card">
+<h3>🌐 Network</h3>
+<p id="network">Checking...</p>
+</div>
+<div class="card">
+<h3>📱 Screen</h3>
+<p id="screen">Checking...</p>
+</div>
+</div>
+
+<footer>
+<p>Phone Master © 2026</p>
+</footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function getInfo(){
+ $("device").textContent =
+ navigator.userAgent;
+ $("screen").textContent =
+ screen.width+" × "+screen.height;
+
+ $("ram").textContent =
+ navigator.deviceMemory
+ ? navigator.deviceMemory+" GB (approx.)"
+ : "Not available in browser";
+
+ $("cpu").textContent =
+ navigator.hardwareConcurrency
+ ? navigator.hardwareConcurrency+" logical cores"
+ : "Not available";
+
+ $("storage").textContent =
+ navigator.storage && navigator.storage.estimate
+ ? "Checking website storage..."
+ : "Not supported";
+
+ if(navigator.storage?.estimate){
+ navigator.storage.estimate().then(data=>{
+ $("storage").textContent =
+ "Website storage used: "+
+ (data.usage/1048576).toFixed(2)+" MB";
+ });
+ }
+
+ $("network").textContent =
+ navigator.onLine?"Online":"Offline";
+}
+
+async function checkBattery(){
+ if(navigator.getBattery){
+ try{
+ const b=await navigator.getBattery();
+ function update(){
+ $("battery").textContent=
+ b.level*100+"%"+
+ (b.charging?" • Charging":" • Not charging");
+ }
+ update();
+ b.addEventListener("levelchange",update);
+ b.addEventListener("chargingchange",update);
+ }catch(e){
+ $("battery").textContent="Unavailable";
+ }
+ }else{
+ $("battery").textContent="Not supported by browser";
+ }
+}
+
+window.addEventListener("online",()=>{
+ $("network").textContent="Online";
+});
+window.addEventListener("offline",()=>{
+ $("network").textContent="Offline";
+});
+
+getInfo();
+checkBattery();
+</script>
+</body>
+  </html>
+  
